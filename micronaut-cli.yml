@@ -1,0 +1,5 @@
+profile: service
+defaultPackage: medium.micronaut.r2dbc.example
+---
+testFramework: junit
+sourceLanguage: java
