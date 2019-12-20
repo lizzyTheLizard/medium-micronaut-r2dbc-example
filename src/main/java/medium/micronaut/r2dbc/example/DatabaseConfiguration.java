@@ -2,23 +2,20 @@ package medium.micronaut.r2dbc.example;
 
 import io.micronaut.context.annotation.Bean;
 import io.micronaut.context.annotation.Factory;
-import io.r2dbc.spi.Connection;
+import io.r2dbc.pool.ConnectionPool;
+import io.r2dbc.pool.ConnectionPoolConfiguration;
 import io.r2dbc.spi.ConnectionFactories;
 import io.r2dbc.spi.ConnectionFactoryOptions;
-import reactor.core.publisher.Mono;
 
 @Factory
-public class ConnectionFactory {
-    private final io.r2dbc.spi.ConnectionFactory factory;
-
-    public ConnectionFactory() {
-        final var baseOptions = ConnectionFactoryOptions.parse("r2dbc:postgresql://postgres:postgres@postgres");
-        final var options = ConnectionFactoryOptions.builder().from(baseOptions).build();
-        this.factory = ConnectionFactories.get(options);
-    }
+public class DatabaseConfiguration {
 
     @Bean
-    public Connection connection() {
-        return Mono.from(factory.create()).
+    public ConnectionPool connectionPool() {
+        final var baseOptions = ConnectionFactoryOptions.parse("r2dbc:postgresql://postgres:postgres@postgres");
+        final var options = ConnectionFactoryOptions.builder().from(baseOptions).build();
+        final var factory = ConnectionFactories.get(options);
+        final var poolOptions = ConnectionPoolConfiguration.builder(factory).build();
+        return new ConnectionPool(poolOptions);
     }
 }

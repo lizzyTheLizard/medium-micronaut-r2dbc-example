@@ -1,36 +1,39 @@
 package medium.micronaut.r2dbc.example;
 
 import io.micronaut.http.annotation.Controller;
-import io.r2dbc.spi.Connection;
+import io.r2dbc.pool.ConnectionPool;
 import io.r2dbc.spi.Result;
 import io.r2dbc.spi.Row;
 import io.r2dbc.spi.RowMetadata;
+import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.UUID;
 
 @Controller
-public class Repository {
-    private final Connection connection;
-
-    public Repository(Connection connection) {
-        this.connection = connection;
-    }
+@RequiredArgsConstructor
+class Repository {
+    private final ConnectionPool connectionPool;
 
     Mono<Issue> findById(UUID id) {
-        final var statement = connection.createStatement("SELECT * FROM issue WHERE id=$1");
-        statement.bind(0, id);
-        return Mono.from(statement.execute())
-                .map(result -> result.map(this::convertToIssue))
-                .flatMap(Mono::from);
+        return connectionPool.create().flatMap(connection -> {
+            final var statement = connection.createStatement("SELECT * FROM issue WHERE id=$1");
+            statement.bind(0, id);
+            return Mono.from(statement.execute())
+                    .map(result -> result.map(this::convertToIssue))
+                    .flatMap(Mono::from)
+                    .doOnTerminate(connection::close);
+        });
     }
 
     Flux<Issue> findAll() {
-        final var statement = connection.createStatement("SELECT * FROM issue");
-        return Mono.from(statement.execute())
-                .map(result -> result.map(this::convertToIssue))
-                .flatMapMany(Flux::from);
+        return connectionPool.create().flatMapMany(connection -> {
+            final var statement = connection.createStatement("SELECT * FROM issue");
+            return Mono.from(statement.execute())
+                    .map(result -> result.map(this::convertToIssue))
+                    .flatMapMany(Flux::from);
+        });
     }
 
     private Issue convertToIssue(Row r, RowMetadata rm) {
@@ -41,28 +44,34 @@ public class Repository {
     }
 
     Mono<Void> insert(Issue issue) {
-        final var statement = connection.createStatement("INSERT INTO issue (id, name, description) VALUES($1, $2, $3)");
-        statement.bind(0, issue.id);
-        statement.bind(1, issue.name);
-        statement.bind(2, issue.description);
-        return Mono.from(statement.execute())
-                .flatMap(this::checkOneRowUpdated);
+        return connectionPool.create().flatMap(connection -> {
+            final var statement = connection.createStatement("INSERT INTO issue (id, name, description) VALUES($1, $2, $3)");
+            statement.bind(0, issue.getId());
+            statement.bind(1, issue.getName());
+            statement.bind(2, issue.getDescription());
+            return Mono.from(statement.execute())
+                    .flatMap(this::checkOneRowUpdated);
+        });
     }
 
     Mono<Void> update(UUID id, Issue issue) {
-        final var statement = connection.createStatement("UPDATE issue SET name=$2, description=$3 WHERE id=$1");
-        statement.bind(0, id);
-        statement.bind(1, issue.name);
-        statement.bind(2, issue.description);
-        return Mono.from(statement.execute())
-                .flatMap(this::checkOneRowUpdated);
+        return connectionPool.create().flatMap(connection -> {
+            final var statement = connection.createStatement("UPDATE issue SET name=$2, description=$3 WHERE id=$1");
+            statement.bind(0, id);
+            statement.bind(1, issue.getName());
+            statement.bind(2, issue.getDescription());
+            return Mono.from(statement.execute())
+                    .flatMap(this::checkOneRowUpdated);
+        });
     }
 
     Mono<Void> deleteById(UUID id) {
-        final var statement = connection.createStatement("DELETE FROM issue WHERE id=$1");
-        statement.bind(0, id);
-        return Mono.from(statement.execute())
-                .flatMap(this::checkOneRowUpdated);
+        return connectionPool.create().flatMap(connection -> {
+            final var statement = connection.createStatement("DELETE FROM issue WHERE id=$1");
+            statement.bind(0, id);
+            return Mono.from(statement.execute())
+                    .flatMap(this::checkOneRowUpdated);
+        });
     }
 
     private Mono<Void> checkOneRowUpdated(Result result) {
