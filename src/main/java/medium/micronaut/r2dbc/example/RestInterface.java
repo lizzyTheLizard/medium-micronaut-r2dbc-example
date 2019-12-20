@@ -1,18 +1,18 @@
 package medium.micronaut.r2dbc.example;
 
 import io.micronaut.http.annotation.*;
+import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import javax.inject.Inject;
 import java.util.UUID;
 
 @Controller("/issue")
+@RequiredArgsConstructor
 public class RestInterface {
-    @Inject
-    private Repository repository;
+    private final Repository repository;
 
-    @Get("/")
+    @Get
     public Flux<Issue> readAll() {
         return repository.findAll();
     }
@@ -22,10 +22,10 @@ public class RestInterface {
         return repository.findById(id);
     }
 
-    @Post("/")
+    @Post
     public Mono<Issue> create(@Body Issue issue) {
         return repository.insert(issue)
-                .then(repository.findById(issue.id));
+                .then(repository.findById(issue.getId()));
     }
 
     @Put("/{id}")

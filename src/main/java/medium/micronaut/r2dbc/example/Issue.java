@@ -1,22 +1,18 @@
 package medium.micronaut.r2dbc.example;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 import java.util.UUID;
 
-@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-public class Issue {
-    final UUID id;
-    final String name;
-    final String description;
-
-    Issue(@JsonProperty("id") UUID id, @JsonProperty("name") String name,
-          @JsonProperty("description") String description) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-    }
+@Data
+@NoArgsConstructor(force = true)
+@RequiredArgsConstructor
+class Issue {
+    private final UUID id;
+    private final String name;
+    private final String description;
 
     Issue partialUpdate(Issue partialIssue) {
         return new Issue(this.id,
