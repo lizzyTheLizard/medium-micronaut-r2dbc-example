@@ -19,6 +19,6 @@ public class ConnectionFactory {
 
     @Bean
     public Connection connection() {
-        return Mono.from(factory.create()).block();
+        return Mono.from(factory.create()).
     }
 }
