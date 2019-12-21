@@ -5,10 +5,10 @@ services:
     build:
       context: .
     depends_on:
-      - postgres
+      - postgres_c
     ports:
-      - "8080:8080"
-  postgres:
+      - "9080:8080"
+  postgres_c:
     image: postgres
     volumes:
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
