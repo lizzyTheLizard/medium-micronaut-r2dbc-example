@@ -4,6 +4,23 @@ services:
   example:
     build:
       context: .
+      dockerfile: Dockerfile.jvm
+    depends_on:
+      - postgres
+    ports:
+      - "8080:8080"
+  example-graal:
+    build:
+      context: .
+      dockerfile: Dockerfile.native
+    depends_on:
+      - postgres
+    ports:
+      - "8080:8080"
+  spring-compare:
+    build:
+      context: ./spring-boot-comparization
+      dockerfile: Dockerfile
     depends_on:
       - postgres
     ports:

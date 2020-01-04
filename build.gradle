@@ -19,6 +19,9 @@ configurations {
     developmentOnly 
 }
 
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
 dependencies {
     compile group: 'io.r2dbc', name: 'r2dbc-postgresql', version: '0.8.0.RELEASE'
     compile group: 'io.r2dbc', name: 'r2dbc-spi', version: '0.8.0.RELEASE'
