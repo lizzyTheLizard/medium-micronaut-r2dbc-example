@@ -20,14 +20,14 @@ class Repository {
 
     Mono<Issue> findById(UUID id) {
         return connectionPool.create().flatMap(connection -> {
-                    final Statement statement = connection.createStatement("SELECT * FROM issue WHERE id=$1");
-                    statement.bind(0, id);
-                    return Mono.from(statement.execute())
-                            .map(result -> result.map(this::convertToIssue))
-                            .flatMap(Mono::from)
-                            .timeout(Duration.ofSeconds(1))
-                            .doOnTerminate(() -> Mono.from(connection.close()).subscribe());
-                });
+            final Statement statement = connection.createStatement("SELECT * FROM issue WHERE id=$1");
+            statement.bind(0, id);
+            return Mono.from(statement.execute())
+                    .map(result -> result.map(this::convertToIssue))
+                    .flatMap(Mono::from)
+                    .timeout(Duration.ofSeconds(1))
+                    .doOnTerminate(() -> Mono.from(connection.close()).subscribe());
+        });
     }
 
     Flux<Issue> findAll() {

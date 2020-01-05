@@ -1,7 +1,5 @@
 package medium.micronaut.r2dbc.example;
 
-import io.micronaut.core.annotation.Introspected;
-import io.micronaut.core.annotation.TypeHint;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
@@ -9,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.UUID;
 
 @Data
-@NoArgsConstructor(force=true)
+@NoArgsConstructor(force = true)
 @RequiredArgsConstructor
 class Issue {
     private final UUID id;

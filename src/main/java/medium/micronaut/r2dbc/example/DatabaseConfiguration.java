@@ -9,10 +9,10 @@ import io.r2dbc.spi.ConnectionFactory;
 import io.r2dbc.spi.ConnectionFactoryOptions;
 
 @Factory
-public class DatabaseConfiguration {
+class DatabaseConfiguration {
 
     @Bean
-    public ConnectionPool connectionPool() {
+    ConnectionPool connectionPool() {
         final ConnectionFactoryOptions baseOptions = ConnectionFactoryOptions.parse("r2dbc:postgresql://postgres:postgres@postgres");
         final ConnectionFactoryOptions options = ConnectionFactoryOptions.builder().from(baseOptions).build();
         final ConnectionFactory factory = ConnectionFactories.get(options);
