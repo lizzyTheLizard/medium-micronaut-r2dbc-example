@@ -1,0 +1,10 @@
+[{
+  "name" : "medium.micronaut.r2dbc.example.Issue",
+  "fields" : [
+      { "name" : "id", "allowWrite" : true },
+      { "name" : "name", "allowWrite" : true },
+      { "name" : "description", "allowWrite" : true }
+  ],
+  "allDeclaredConstructors" : true,
+  "allDeclaredMethods" : true
+}]

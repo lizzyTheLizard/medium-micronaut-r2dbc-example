@@ -1,27 +1,24 @@
 package medium.micronaut.r2dbc.example;
 
-import lombok.AllArgsConstructor;
+import io.micronaut.core.annotation.Introspected;
+import io.micronaut.core.annotation.TypeHint;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 import java.util.UUID;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
+@NoArgsConstructor(force=true)
+@RequiredArgsConstructor
 class Issue {
-    private UUID id;
-    private String name;
-    private String description;
+    private final UUID id;
+    private final String name;
+    private final String description;
 
     Issue partialUpdate(Issue partialIssue) {
-        if (partialIssue.getName() != null) {
-            this.name = partialIssue.getName();
-        }
-
-        if (partialIssue.getDescription() != null) {
-            this.description = partialIssue.getDescription();
-        }
-        return this;
+        return new Issue(this.id,
+                partialIssue.name != null ? partialIssue.name : this.name,
+                partialIssue.description != null ? partialIssue.description : this.description);
     }
 }
